@@ -241,17 +241,17 @@ CREATE ROLE 'Cooker';
  
 # Autharazition
 
-create user 'admin'@'%' identified by 'admin';
+-- create user 'admin'@'%' identified by 'admin';
 -- grand all privileges on _ to 'admin'@'%';
 
-flush privileges;
+-- flush privileges;
 
-create user 'cooker1'@'%' identified by 'cooker1';
+-- create user 'cooker1'@'%' identified by 'cooker1';
 -- grand insert on recipes to 'cooker1'@'%';
 -- grand all privileges on co_re to 'cooker1'@'%';
 -- grand all privileges on my_cook to 'cooker1'@'%';
 
-flush privileges;
+-- flush privileges;
 
 
 

@@ -80,9 +80,9 @@ FROM (
 
 
 
-SELECT * FROM recipe_food_group;
-call CHECK_AT_LEAST_ONE_COOKER(@myFlag);
-select @myFlag;
+-- SELECT * FROM recipe_food_group;
+-- call CHECK_AT_LEAST_ONE_COOKER(@myFlag);
+-- select @myFlag;
 
 
 DROP PROCEDURE DYNAMIC_CALORIES_CALULATOR;

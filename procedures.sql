@@ -1,5 +1,5 @@
-CREATE SCHEMA `cooking_contest_ntua`;
-DROP SCHEMA `cooking_contest_ntua`;
+-- CREATE SCHEMA `cooking_contest_ntua`;
+-- DROP SCHEMA `cooking_contest_ntua`;
 
 
 

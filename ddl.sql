@@ -333,5 +333,180 @@ CREATE TABLE episode_expansion (
 #CREATE INDEX  fk_episode_expansion2 ON episode_expansion(cooker_id);
 #CREATE INDEX  fk_episode_expansion3 ON episode_expansion(recipe_id);
 
-   
+
+
+
+
+-- QUERY 12
+WITH ranked_recipes AS (
+	SELECT
+	SUM(r.difficulty) AS total_difficulty, ee.season_year, ee.episode_id
+	FROM episode_expansion AS ee
+	INNER JOIN recipes AS r ON ee.recipe_id = r.recipe_id
+	where ee.is_judge = '0'
+	GROUP BY ee.season_year, ee.episode_id
+	),
+min_ranked_recipe AS (
+	SELECT
+	MIN(total_difficulty) AS min_total_difficulty
+	FROM ranked_recipes
+	)
+SELECT *
+FROM ranked_recipes AS rr
+INNER JOIN min_ranked_recipe AS mrr
+ON rr.total_difficulty = mrr.min_total_difficulty; 
+
+-- QUERY 13
+WITH ranked_episodes AS (
+	SELECT
+	ee.season_year,
+	ee.episode_id,
+	SUM(CASE
+		WHEN c.cooker_rank = 'C' THEN 1
+		WHEN c.cooker_rank = 'B' THEN 2
+		WHEN c.cooker_rank = 'A' THEN 3
+		WHEN c.cooker_rank = 'sous-chef' THEN 4
+		WHEN c.cooker_rank = 'chef' THEN 5
+		ELSE 0
+	END) AS total_rank
+	FROM episode_expansion AS ee
+	INNER JOIN cooker AS c ON ee.cooker_id = c.cooker_id
+	GROUP BY ee.season_year, ee.episode_id
+	),
+min_ranked_episodes AS (
+	SELECT
+	MIN(total_rank) AS min_total_rank
+	FROM ranked_episodes
+	)
+SELECT re.*
+FROM ranked_episodes AS re
+INNER JOIN min_ranked_episodes AS mre
+ON re.total_rank = mre.min_total_rank;
+
+-- QUERY 14
+SELECT topics_name, MAX(topic_count)
+FROM (
+    SELECT rtr.topics_id, COUNT(*) AS topic_count, rt.topics_name
+    FROM episode_expansion AS ee
+    INNER JOIN recipe_topics_recipes AS rtr ON ee.recipe_id = rtr.recipe_id
+    INNER JOIN recipe_topics AS rt ON rt.topics_id = rtr.topics_id
+    GROUP BY rtr.topics_id
+) AS res;
+
+-- QUERY 15
+SELECT f.food_group_name 
+FROM food_group AS f
+WHERE f.food_group_id NOT IN (
+    SELECT ci.food_group_id
+    FROM episode_expansion AS ee
+    INNER JOIN recipes_ingredients AS ri ON ee.recipe_id = ri.recipe_id
+    INNER JOIN cooking_ingredients AS ci ON ci.ingredients_id = ri.ingredients_id
+    GROUP BY ci.food_group_id
+);
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+SELECT SUM(a) AS sum_of_a, b, c
+FROM your_table
+GROUP BY b, c;
+-----------------------------------
+
+-- QUERY 11
+
+select *
+from (SELECT SUM(score) AS score, contestant_id, judge_id
+FROM (
+    SELECT
+        CASE
+            WHEN ee1.eval1 IS NOT NULL THEN ee2.eval1
+            WHEN ee1.eval2 IS NOT NULL THEN ee2.eval2
+            WHEN ee1.eval3 IS NOT NULL THEN ee2.eval3
+            ELSE 0
+        END AS score,
+        ee2.cooker_id AS contestant_id,
+        ee1.cooker_id AS judge_id
+    FROM
+        episode_expansion ee1
+    INNER JOIN episode_expansion ee2 ON ee1.season_year = ee2.season_year 
+                                      AND ee1.episode_id = ee2.episode_id 
+                                      AND ee1.is_judge = 1 
+                                      AND ee2.is_judge = 0
+) AS res
+GROUP BY contestant_id, judge_id) as temp
+ORDER BY score DESC
+LIMIT 5;
+	
+	;
+-------------------------------------------------------------------------------------------------------------------------------------
+
+    SELECT
+        CASE
+            WHEN ee1.eval1 IS NOT NULL THEN ee2.eval1
+            WHEN ee1.eval2 IS NOT NULL THEN ee2.eval2
+            WHEN ee1.eval3 IS NOT NULL THEN ee2.eval3
+            ELSE 0
+        END AS score,
+        ee2.cooker_id AS contestant_id,
+        ee1.cooker_id AS judge_id
+    FROM
+        episode_expansion ee1
+    INNER JOIN episode_expansion ee2 ON ee1.season_year = ee2.season_year 
+                                      AND ee1.episode_id = ee2.episode_id 
+                                      AND ee1.is_judge = 1 
+                                      AND ee2.is_judge = 0
+	ORDER BY contestant_id, judge_id;
+--------------------------------------------------------------------------------------------------------------------------------
+
+
+SELECT
+re.ingredients_id, ee.recipe_id, ee.season_year
+from episode_expansion ee
+inner join recipes_ingredients re on ee.recipe_id = re.recipe_id;
+
+
+
+
+SELECT ni.carbonhydrates , irs.quantity, irs.recipe_id, irs.season_year
+FROM nutritions_info ni
+INNER JOIN (
+    SELECT re.ingredients_id, re.quantity, ee.recipe_id, ee.season_year
+    FROM episode_expansion ee
+    INNER JOIN recipes_ingredients re ON ee.recipe_id = re.recipe_id
+) irs ON ni.ingredients_id = irs.ingredients_id
+order by irs.quantity desc;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+-- QUERY 9
+SELECT irs.season_year, SUM(ni.carbonhydrates * irs.quantity)/100 AS total_carbonhydrates
+FROM nutritions_info ni
+INNER JOIN (
+    SELECT re.ingredients_id, re.quantity, ee.season_year
+    FROM episode_expansion ee
+    INNER JOIN recipes_ingredients re ON ee.recipe_id = re.recipe_id and ee.is_judge = 0
+) irs ON ni.ingredients_id = irs.ingredients_id
+group by irs.season_year;
+
+
+
+
+
+
+
 

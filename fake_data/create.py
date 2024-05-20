@@ -520,7 +520,7 @@ def fake_episode_expansion(f):
     
 
 
-with open("dummy_data.sql", "w") as f:
+with open("fake_data.sql", "w") as f:
     f.write("BEGIN;\n\n")
     fake_food_group(f)
     f.write("\n")

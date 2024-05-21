@@ -1,6 +1,6 @@
 -- CREATE SCHEMA `cooking_contest_ntua`;
 -- DROP SCHEMA `cooking_contest_ntua`;
-USE masterchef;
+USE cooking_contest_ntua;
 
 
 #TRIGGERS

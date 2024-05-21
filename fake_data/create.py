@@ -231,14 +231,17 @@ def fake_recipes_ingredients(f):
         f.write(obj)
 # ------------------------------------------------------------------------------------------------------------------------------------------------- #
 def fake_recipes_type_meal(f):
+    l, table = [_ for _ in range(1, N_TYPE_MEALS+1)], []
     def build_rec(recipe_id):
-        type_meal_id = random.randint(1, N_TYPE_MEALS)
-        return f"INSERT INTO recipes_type_meal (recipe_id, type_meal_id) VALUES ('{
-            recipe_id+1}','{
-            type_meal_id}');\n"
-    
-    table = (build_rec(_) for _ in range(N_RECIPES))
+        type_meal_ids = random.randint(1, N_TYPE_MEALS)
+        type_meals = random.sample(l, type_meal_ids)
+        for type_meal_id in type_meals:
+            table.append(f"INSERT INTO recipes_type_meal (recipe_id, type_meal_id) VALUES ('{
+                recipe_id+1}','{
+                type_meal_id}');\n")
 
+    for _ in range(N_RECIPES):
+        build_rec(_)
     for obj in table:
         f.write(obj)
 # ------------------------------------------------------------------------------------------------------------------------------------------------- #
@@ -520,7 +523,7 @@ def fake_episode_expansion(f):
     
 
 
-with open("fake_data.sql", "w") as f:
+with open("fake_data/fake_data.sql", "w") as f:
     f.write("BEGIN;\n\n")
     fake_food_group(f)
     f.write("\n")

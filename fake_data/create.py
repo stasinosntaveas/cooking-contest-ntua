@@ -1,16 +1,14 @@
 import random
-import bcrypt
 import faker
 fake = faker.Faker()
-import itertools
-import datetime
+import sys
 
 N_RECIPES = 100
-N_COOKERS = 10000
+N_COOKERS = 100
 N_EPISODES = 50
 N_FOOD_GROUPS = 12
 N_INGREDIENTS = 50
-N_COUNTRIES = 10
+N_COUNTRIES = 40
 N_TYPE_MEALS = 10
 N_TOTAL_INGREDIENTS = 500
 N_MEALS = 10
@@ -25,6 +23,7 @@ recipes_with_main_ingredient = []
 recipe_ethnic = [[] for _ in range(N_COUNTRIES+1)]
 cooker_origin = [0 for _ in range(N_COOKERS+1)]
 ethnic_cooker = [[] for _ in range(N_COUNTRIES+1)]
+cooker_recipes = [[] for _ in range(N_COOKERS+1)]
 
 def get_random_word(max_length):
 	catch_phrase = fake.word()
@@ -42,19 +41,20 @@ def get_random_paragraph(max_length):
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------- #
 def fake_food_group(f):
-    food_group_names = ["Spices and essential oils",
-                        "Coffee, tea and their products",
-                        "Preserved foods",
-                        "Sweeteners",
-                        "Fats and oils",
-                        "Milk, eggs and their products",
-                        "Meat and its products",
-                        "Fish and their products",
-                        "Cereals and their products",
-                        "Various foods of plant origin",
-                        "Products with sweeteners",
-                        "Various drinks"]
-    food_group_descriptions = [
+    food_group_names = ["",
+        "Spices and essential oils",
+        "Coffee, tea and their products",
+        "Preserved foods",
+        "Sweeteners",
+        "Fats and oils",
+        "Milk, eggs and their products",
+        "Meat and its products",
+        "Fish and their products",
+        "Cereals and their products",
+        "Various foods of plant origin",
+        "Products with sweeteners",
+        "Various drinks"]
+    food_group_descriptions = ["",
         "A wide range of aromatic substances derived from various parts of plants, used to flavor and enhance the taste of food dishes.",
         "Beverages and food items made from coffee beans and tea leaves, providing stimulating effects due to their caffeine content.",
         "Foods that have been processed and stored to prevent spoilage, including canned, pickled, dried, and frozen products.",
@@ -74,21 +74,21 @@ def fake_food_group(f):
         image = fake.image_url()
         image_caption = get_random_catch_phrase(40)
         return f"INSERT INTO food_group (food_group_id, food_group_name, food_group_description, image, image_caption) VALUES ('{
-            food_group_id+1}', '{
+            food_group_id}', '{
             food_group_name}', '{
             food_group_description}', '{
             image}', '{
             image_caption}');\n"
     
     
-    food_groups = (build_food_group(_) for _ in range(N_FOOD_GROUPS))
+    food_groups = (build_food_group(_) for _ in range(1, N_FOOD_GROUPS+1))
     
     for food_group in food_groups:
         f.write(food_group)
 # ------------------------------------------------------------------------------------------------------------------------------------------------- #
 def fake_cooking_ingredients(f):
     
-    ingredients_names = [
+    ingredients_names = ["",
     "Salt", "Sugar", "Flour", "Butter", "Eggs", "Milk", "Olive oil", "Garlic", "Onion", "Tomato",
     "Lemon", "Chicken", "Beef", "Fish", "Rice", "Pasta", "Cheese", "Yogurt", "Carrot", "Potato",
     "Spinach", "Broccoli", "Avocado", "Cucumber", "Bell pepper", "Mushroom", "Parsley", "Basil",
@@ -96,7 +96,7 @@ def fake_cooking_ingredients(f):
     "Turmeric", "Honey", "Soy sauce", "Vinegar", "Mustard", "Worcestershire sauce", "Mayonnaise",
     "Ketchup", "Barbecue sauce", "Sriracha", "Tahini", "Maple syrup", "Vanilla extract", "Baking powder"
     ]
-    measuring_units = [
+    measuring_units = ["",
         "teaspoon", "tablespoon", "cup", "fluid ounce", "pint", "quart", "gallon",
         "milliliter", "liter", "gram", "kilogram", "ounce", "pound"
     ]
@@ -107,14 +107,14 @@ def fake_cooking_ingredients(f):
         image = fake.image_url()
         image_caption = get_random_catch_phrase(40)
         return f"INSERT INTO cooking_ingredients (ingredients_id, ingredients_name, measuring_herd, food_group_id, image, image_caption) VALUES ('{
-            ingredient_id+1}', '{
+            ingredient_id}', '{
             ingredients_name}', '{
             measuring_herd}', '{
             food_group_id}', '{
             image}', '{
             image_caption}');\n"
     
-    ingredients = (make_ingredient_line(_) for _ in range(N_INGREDIENTS))
+    ingredients = (make_ingredient_line(_) for _ in range(1, N_INGREDIENTS+1))
     
     for ingredient in ingredients:
         f.write(ingredient)
@@ -125,12 +125,12 @@ def fake_nutritions_info(f):
         lipids = random.randint(0, 300) / 10
         proteins = random.randint(0, 300) / 10
         return f"INSERT INTO nutritions_info (ingredients_id, carbonhydrates, lipids, proteins) VALUES ('{
-            ingredients_id+1}','{
+            ingredients_id}','{
             carbonhydrates}', '{
             lipids}', '{
             proteins}');\n"
     
-    nutritions_info = (build_nutritions_info(_) for _ in range(N_INGREDIENTS))
+    nutritions_info = (build_nutritions_info(_) for _ in range(1, N_INGREDIENTS+1))
     
     for nutritions_info_line in nutritions_info:
         f.write(nutritions_info_line)
@@ -141,12 +141,12 @@ def fake_type_meal(f):
         image = fake.image_url()
         image_caption = get_random_catch_phrase(40)
         return f"INSERT INTO type_meal (type_meal_id, type_meal_name, image,image_caption) VALUES ('{
-            type_meal_id+1}', '{
+            type_meal_id}', '{
             type_meal_name}', '{
             image}', '{
             image_caption}');\n"
     
-    type_meal_table = (build_type_meal(_) for _ in range(N_TYPE_MEALS))
+    type_meal_table = (build_type_meal(_) for _ in range(1, N_TYPE_MEALS+1))
     
     for type_meal in type_meal_table:
         f.write(type_meal)
@@ -157,18 +157,18 @@ def fake_ethnic(f):
         image = fake.image_url()
         image_caption = get_random_catch_phrase(40)
         return f"INSERT INTO ethnic (ethnic_id, country_name, image,image_caption) VALUES ('{
-            ethnic_id+1}', '{
-            country_name}', '{
+            ethnic_id}', \"{
+            country_name}\", '{
             image}', '{
             image_caption}');\n"
 
-    etnic_table = (build_ethnic(_) for _ in range(N_COUNTRIES))
+    etnic_table = (build_ethnic(_) for _ in range(1, N_COUNTRIES+1))
 
     for ethnic in etnic_table:
         f.write(ethnic)
 # ------------------------------------------------------------------------------------------------------------------------------------------------- #
 def fake_recipes(f):
-    def build_recipe(recipe_id):
+    def build_recipe(recipe_id, ethnic_id = 0):
         cooking_or_pastry = random.choice([0, 1])
         difficulty = random.randint(1, 5)
         recipe_name = get_random_catch_phrase(100)
@@ -177,13 +177,13 @@ def fake_recipes(f):
         time_execution = int(random.randint(30, 180)/5) * 5 # in minutes, only multiples of 5
         quantity = random.randint(2, 4)
         ingredients_id = random.randint(1, N_INGREDIENTS) # this is the main ingredient
-        ethnic_id = random.randint(1, N_COUNTRIES)
+        ethnic_id = random.randint(1, N_COUNTRIES) if ethnic_id == 0 else ethnic_id
         recipe_ethnic[ethnic_id].append(recipe_id)
         image = fake.image_url()
         image_caption = get_random_catch_phrase(40)
-        recipes_with_main_ingredient.append((ingredients_id, recipe_id+1))
+        recipes_with_main_ingredient.append((ingredients_id, recipe_id))
         return f"INSERT INTO recipes (recipe_id, cooking_or_pastry, difficulty, recipe_name, recipe_description, time_preparation, time_execution, quantity, ingredients_id, ethnic_id, image, image_caption) VALUES ('{
-            recipe_id+1}', {
+            recipe_id}', {
             cooking_or_pastry}, '{
             difficulty}', '{
             recipe_name}', '{
@@ -196,11 +196,14 @@ def fake_recipes(f):
             image}', '{
             image_caption}');\n"
 
-    recipes = (build_recipe(_) for _ in range(N_RECIPES))
+    recipes = [build_recipe(_, _) for _ in range(1, N_COUNTRIES+1)]
+    for _ in range(N_COUNTRIES+1, N_RECIPES+1):
+        recipes.append(build_recipe(_))
     for recipe in recipes:
         f.write(recipe)
 # ------------------------------------------------------------------------------------------------------------------------------------------------- #
 def fake_recipes_ingredients(f):
+    global recipes_with_main_ingredient
     def build_recipes_ingredients():
         ingredients_id = random.randint(1, N_INGREDIENTS)
         recipe_id = random.randint(1, N_RECIPES)
@@ -226,7 +229,6 @@ def fake_recipes_ingredients(f):
             recipes_with_main_ingredient[y][1]}', '{
             quantity}');\n"
         table.append(output)
-
     for obj in table:
         f.write(obj)
 # ------------------------------------------------------------------------------------------------------------------------------------------------- #
@@ -445,27 +447,36 @@ def fake_cooker(f):
         f.write(obj)
 # ------------------------------------------------------------------------------------------------------------------------------------------------- #
 def fake_cooker_ethnic(f):
-    def build_cooker_ethnic(cooker_id):
-        ethnic_id = random.randint(1, N_COUNTRIES)
+    def build_cooker_ethnic(cooker_id, ethnic_id = 0):
+        ethnic_id = random.randint(1, N_COUNTRIES) if ethnic_id == 0 else ethnic_id
         cooker_origin[cooker_id] = ethnic_id
         ethnic_cooker[ethnic_id].append(cooker_id)
         return f"INSERT INTO cooker_ethnic (cooker_id, ethnic_id) VALUES ('{
-            cooker_id+1}', '{
+            cooker_id}', '{
             ethnic_id}');\n"
     
-    table = [build_cooker_ethnic(_) for _ in range(N_COOKERS)]
+    table = [build_cooker_ethnic(_, _) for _ in range(1, N_COUNTRIES+1)]
+    for _ in range(N_COUNTRIES+1, N_COOKERS+1):
+        table.append(build_cooker_ethnic(_))
    
     for obj in table:
         f.write(obj)
 # ------------------------------------------------------------------------------------------------------------------------------------------------- #
 def fake_cooker_recipes(f):
-    def build_cooker_recipes(cooker_id):
-        recipe_id = random.choice(recipe_ethnic[cooker_origin[cooker_id]])
-        return f"INSERT INTO cooker_recipes (cooker_id, recipe_id) VALUES ('{
-            cooker_id+1}', '{
-            recipe_id+1}');\n"
+    table = []
 
-    table = [build_cooker_recipes(_) for _ in range(N_COOKERS)]
+    def build_cooker_recipes(cooker_id):
+        country = cooker_origin[cooker_id]
+        number_of_recipes = random.randint(1, len(recipe_ethnic[country]))
+        recipes = random.sample(recipe_ethnic[country], number_of_recipes)
+        for recipe in recipes:
+            cooker_recipes[cooker_id].append(recipe)
+            table.append(f"INSERT INTO cooker_recipes (cooker_id, recipe_id) VALUES ('{
+                cooker_id}', '{
+                recipe}');\n")
+        
+    for _ in range(1, N_COOKERS+1):
+        build_cooker_recipes(_)
    
     for obj in table:
         f.write(obj)
@@ -486,44 +497,55 @@ def fake_episode(f):
         f.write(obj)
 # ------------------------------------------------------------------------------------------------------------------------------------------------- #
 def fake_episode_expansion(f):
-    table = []
-    def build_episode_expansion(episode_id, season_year):
-        cuisine = random.randint(1, N_COUNTRIES)
-        joins = random.sample(ethnic_cooker[cuisine], 13)
-        recipe_id = random.choice(recipe_ethnic[cuisine])
-        for _ in range(3):
-            table.append(f"INSERT INTO episode_expansion (episode_id, cooker_id, recipe_id, season_year, is_judge, eval{_+1}) VALUES ('{
-            episode_id}', '{
-            joins[_]}', '{
-            recipe_id}', '{
-            season_year}', {
-            1}, '{1}');\n")
+    table, countries, cooks = [], [_ for _ in range(1, N_COUNTRIES+1)], [_ for _ in range(1, N_COOKERS+1)]
 
-        for _ in range(3, 13):
-            eval1 = random.randint(1, 5)
-            eval2 = random.randint(1, 5)
-            eval3 = random.randint(1, 5)
-            table.append(f"INSERT INTO episode_expansion (episode_id, cooker_id, recipe_id, season_year, is_judge, eval1, eval2, eval3) VALUES ('{
-            episode_id}', '{
-            joins[_]}', '{
-            recipe_id}', '{
-            season_year}', {
-            0}, '{
-            eval1}', '{
-            eval2}', '{
-            eval3}');\n")
+    def build_episode_expansion(episode_id, season_year, this = [], that = [], these = [], those = []):
+        if episode_id < 10:
+            cuisine = random.sample(countries, 33)
+            for _ in cuisine:
+                if _ in this and _ in that:
+                    cuisine.remove(_)
+            cuisine = cuisine[:13]
+            cookers = []
+            for _ in cuisine:
+                cooker = random.choice(ethnic_cooker[_])
+                cookers.append(cooker)
 
+            # now cuisine consists of 10 countries that follow the rules,
+            # coookers consists of 10 cookers that follow the rules,
+            # judges consists of 3 cookers that follow the rules
 
-    for season in range(2022, 2025):
-        for episode in range(1, 11):
-            build_episode_expansion(episode, season)
+            recipe_id = [random.choice(cooker_recipes[_]) for _ in cookers]
+            for _ in range(3):
+                table.append(f"INSERT INTO episode_expansion (episode_id, cooker_id, recipe_id, season_year, is_judge, eval{_+1}) VALUES ('{
+                episode_id}', '{
+                cookers[_]}', '{
+                recipe_id[_]}', '{
+                season_year}', 1, '1');\n")
+
+            for _ in range(3, 13):
+                table.append(f"INSERT INTO episode_expansion (episode_id, cooker_id, recipe_id, season_year, is_judge, eval1, eval2, eval3) VALUES ('{
+                episode_id}', '{
+                cookers[_]}', '{
+                recipe_id[_]}', '{
+                season_year}', 0, '{
+                random.randint(1, 5)}','{
+                random.randint(1, 5)}','{
+                random.randint(1, 5)}');\n")
+
+            cuisine = cuisine[3:]
+            cookers = cookers[3:]
+            build_episode_expansion(episode_id+1, season_year, cuisine, this, cookers, these)
+
+    for season in range(2022, 2024+1):
+        build_episode_expansion(1, season, [], [])
 
     for obj in table:
         f.write(obj)
     
 
-
-with open("fake_data/fake_data.sql", "w") as f:
+s = f"INSERT INTO episode_expansion (episode_id, cooker_id, recipe_id, season_year, is_judge, eval1, eval2, eval3) VALUES ('"
+with open("fake_data.sql", "w") as f:
     f.write("BEGIN;\n\n")
     fake_food_group(f)
     f.write("\n")

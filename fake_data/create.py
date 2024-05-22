@@ -533,8 +533,6 @@ def fake_episode_expansion(f):
                 random.randint(1, 5)}','{
                 random.randint(1, 5)}');\n")
 
-            cuisine = cuisine[3:]
-            cookers = cookers[3:]
             build_episode_expansion(episode_id+1, season_year, cuisine, this, cookers, these)
 
     for season in range(2022, 2024+1):

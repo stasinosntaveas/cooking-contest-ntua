@@ -22,5 +22,7 @@ This project is ideal for culinary enthusiasts and event organizers looking to c
 ## Entity Related Diagram
 ![COOKING_CONTEST_ERD_NTUA_2024](https://github.com/stasinosntaveas/cooking-contest-ntua/blob/main/pngs/erd_transparent.png)
 
+## Relational Schema
+![COOKING_CONTEST_ERD_NTUA_2024](https://github.com/stasinosntaveas/cooking-contest-ntua/blob/main/pngs/rs.png)
 
 For additional images, please visit the [PNGs directory](https://github.com/stasinosntaveas/cooking-contest-ntua/tree/main/pngs).

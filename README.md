@@ -6,8 +6,8 @@ This repository contains a comprehensive framework for organizing cooking contes
 
 ## Directory Features
 - **Database Management:** Utilizes MySQL for robust and scalable data storage.
-- **Data Generation:** Includes a ![Python script](https://github.com/stasinosntaveas/cooking-contest-ntua/blob/main/fake_data/create.py) to create and manage dummy data for testing and development.
-- **Triggers and Procedures:** Implements MySQL triggers and procedures to automate and streamline database operations ![here](https://github.com/stasinosntaveas/cooking-contest-ntua/blob/main/procedures.sql).
+- **Data Generation:** Includes a [Python script](https://github.com/stasinosntaveas/cooking-contest-ntua/blob/main/fake_data/create.py) to create and manage dummy data for testing and development.
+- **Triggers and Procedures:** Implements MySQL triggers and procedures to automate and streamline database operations [here](https://github.com/stasinosntaveas/cooking-contest-ntua/blob/main/procedures.sql).
 
 This project is ideal for culinary enthusiasts and event organizers looking to create, manage, and run detailed cooking competitions.
 

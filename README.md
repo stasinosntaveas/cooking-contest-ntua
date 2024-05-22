@@ -19,7 +19,7 @@ This project is ideal for culinary enthusiasts and event organizers looking to c
 - **Contests Management**: Handle data related to cooking contests, including seasons, episodes, and the scores awarded by judges.
 - **Scoring System**: Calculate and store scores given by judges.
 
-## Entity Related Diagram:
+## Entity Related Diagram
 ![COOKING_CONTEST_ERD_NTUA_2024](https://github.com/stasinosntaveas/cooking-contest-ntua/blob/main/pngs/erd_transparent.png)
 
 

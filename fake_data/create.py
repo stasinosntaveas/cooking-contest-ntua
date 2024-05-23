@@ -4,8 +4,7 @@ fake = faker.Faker()
 import sys
 
 N_RECIPES = 100
-N_COOKERS = 100
-N_EPISODES = 50
+N_COOKERS = 50
 N_FOOD_GROUPS = 12
 N_INGREDIENTS = 50
 N_COUNTRIES = 40

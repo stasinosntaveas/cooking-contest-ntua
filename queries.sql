@@ -235,3 +235,133 @@ WITH temp AS (
 )
 SELECT season_year, episode_id, MAX(Equipment) AS res
 FROM temp;
+
+
+
+
+
+-- 3.1 QUERY 1 Μεσος ορος αξιολογήσεων(σκορ) ανά μάγειρα και εθνική κουζίνα 
+SELECT 
+    CONCAT(c.first_name, ' ', c.last_name) AS full_name,
+    e.country_name,
+    ((AVG(ee.eval1) + AVG(ee.eval2) + AVG(ee.eval3)) / 3.0) AS average_score
+FROM 
+    episode_expansion ee
+JOIN 
+    cooker c ON ee.cooker_id = c.cooker_id
+JOIN 
+    recipes r ON ee.recipe_id = r.recipe_id
+JOIN 
+    ethnic e ON r.ethnic_id = e.ethnic_id
+where ee.is_judge = 0 
+GROUP BY 
+    c.cooker_id, e.country_name;
+
+
+    
+    
+-- 3.2 QUERY 2 Για δεδομένη Εθνική κουζίνα και έτος, ποιοι μάγειρες ανήκουν
+-- σε αυτή και ποιοι μάγειρεςσυμμετείχαν σε επεισόδια
+SELECT 
+    e.country_name, CONCAT(c.first_name, ' ', c.last_name) AS full_name
+FROM 
+    cooker c
+JOIN 
+    cooker_ethnic ce ON c.cooker_id = ce.cooker_id
+JOIN 
+    ethnic e ON e.ethnic_id = ce.ethnic_id
+JOIN 
+    episode_expansion ee ON c.cooker_id = ee.cooker_id
+GROUP BY 
+    full_name, e.country_name
+ORDER BY 
+    e.country_name, full_name;
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- 3.3. Βρείτε τους μάγειρες που δεν έχουν συμμετάσχει ποτέ ως κριτές σε κάποιο επεισόδιο
+select c.cooker_id ,c.first_name, c.last_name , 2024- year(c.birth_date) as age ,count(cr.recipe_id) as total_recipes
+from cooker c
+join
+	cooker_recipes	cr on c.cooker_id = cr.cooker_id
+where c.birth_date < '1994-05-26' 
+group by c.cooker_id
+order by total_recipes desc;
+
+
+
+
+
+
+
+
+
+-- 3.4 Βρείτε τους μάγειρες που δεν έχουν συμμετάσχει ποτέ σε ως κριτές σε κάποιο επεισόδιο
+SELECT c.cooker_id, c.first_name, c.last_name
+FROM cooker c
+JOIN episode_expansion ee ON c.cooker_id = ee.cooker_id
+WHERE ee.is_judge = 0;
+
+
+
+
+
+
+-- 3.5. Ποιοι κριτές έχουν συμμετάσχει στον ίδιο αριθμό επεισοδίων
+-- σε διάστημα ενός έτους με περισσότερες από 3 εμφανίσεις;
+WITH temp AS (
+    SELECT cooker_id, season_year, COUNT(*) AS freq
+    FROM episode_expansion
+    WHERE is_judge = 1
+    GROUP BY cooker_id, season_year
+),
+temp2 AS (
+    SELECT t1.cooker_id AS id1, t2.cooker_id AS id2, t1.freq
+    FROM temp AS t1
+    INNER JOIN temp AS t2 ON t1.freq = t2.freq
+    WHERE t1.freq >= 3 AND t1.cooker_id < t2.cooker_id
+),
+temp3 AS (
+    SELECT CONCAT(c.first_name, ' ', c.last_name) AS Cooker1, a.id2, a.freq
+    FROM temp2 AS a
+    INNER JOIN cooker AS c ON a.id1 = c.cooker_id
+)
+SELECT x.Cooker1, CONCAT(y.first_name, ' ', y.last_name) AS Cooker2, x.freq
+FROM temp3 AS x
+INNER JOIN cooker AS y ON x.id2 = y.cooker_id;
+
+-- where t1.freq >= 0;
+-- >3
+
+
+
+-- 3.7. Βρείτε όλους τους μάγειρες που συμμετείχαν τουλάχιστον
+-- 5 λιγότερες φορές από τον μάγειρα
+-- με τις περισσότερες συμμετοχές σε επεισόδια
+WITH temp AS (
+    SELECT cooker_id, COUNT(*) AS freq
+    FROM episode_expansion
+    WHERE is_judge = 0
+    GROUP BY cooker_id
+)
+SELECT t.cooker_id, t.freq
+FROM temp t
+WHERE t.freq < (SELECT MAX(freq) FROM temp) - 4;
+
+
+
+
+
+
+
+

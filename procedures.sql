@@ -54,7 +54,7 @@ DELIMITER ;
 
 DELIMITER ;
 
-#VIWES
+#VIEWS
 drop VIEW recipe_food_group;
 
 CREATE VIEW recipe_food_group

@@ -137,7 +137,7 @@ BEGIN
     
     select count(*) into cee 
     from (
-		select ce.cooker_id, r.ethinic_id
+		select ce.cooker_id, r.ethnic_id
 		from (
 		select ee.cooker_id, ee.recipe_id
 		from episode_expansion as ee

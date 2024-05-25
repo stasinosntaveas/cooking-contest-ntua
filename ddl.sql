@@ -87,7 +87,6 @@ CREATE TABLE recipes (
     PRIMARY KEY (recipe_id,ethnic_id,ingredients_id),
     CONSTRAINT fk_ethnic FOREIGN KEY (ethnic_id) references ethnic(ethnic_id)
     ON UPDATE NO ACTION ON DELETE RESTRICT,
-    -- to allaksa htan cascade
     CONSTRAINT fk_cooking_ingredients FOREIGN KEY (ingredients_id) references cooking_ingredients(ingredients_id)
     ON UPDATE NO ACTION ON DELETE RESTRICT
 );
@@ -214,25 +213,6 @@ CREATE INDEX fk_recipes_equipment ON  recipes_equipment(recipe_id);
 #CREATE INDEX fk_recipes_equipment2 ON  recipes_equipment(equipment_id);
 
 
--- DROP TABLE IF EXISTS equipment_steps;
--- CREATE TABLE equipment_steps (
- --   equipment_id INT UNSIGNED NOT NULL,
- --   steps_id INT UNSIGNED NOT NULL,
- --   CONSTRAINT fk_equipment_steps
- --   FOREIGN KEY (equipment_id)
- --   references equipment(equipment_id)
- --   ON UPDATE CASCADE ON DELETE RESTRICT,
- --   CONSTRAINT fk_equipment_steps2
- --   FOREIGN KEY (steps_id)
- --   references steps(steps_id)
- --   ON UPDATE CASCADE ON DELETE RESTRICT
--- );
-#CREATE INDEX fk_equipment_steps ON  equipment_steps(equipment_id);
-#CREATE INDEX fk_equipment_steps2 ON  equipment_steps(steps_id);
-
-
-
-
 DROP TABLE IF EXISTS recipe_topics;
 CREATE TABLE recipe_topics (
     topics_id INT UNSIGNED AUTO_INCREMENT NOT NULL,
@@ -328,7 +308,14 @@ CREATE TABLE episode_expansion (
     CONSTRAINT fk_episode_expansion3 FOREIGN KEY (recipe_id) references recipes(recipe_id)
     ON UPDATE NO ACTION ON DELETE RESTRICT
 );
--- idx_is_judge
+
 CREATE INDEX  fk_episode_expansion1 ON episode_expansion(episode_id, season_year);
 #CREATE INDEX  fk_episode_expansion2 ON episode_expansion(cooker_id);
 #CREATE INDEX  fk_episode_expansion3 ON episode_expansion(recipe_id);
+
+-- Indexies (from the queries)
+
+CREATE INDEX  idx_episode_expansion1 ON episode_expansion(is_judge);
+CREATE INDEX  idx_cooker ON cooker(birth_date);
+CREATE INDEX  idx_ethnic ON ethnic(country_name);
+

@@ -1,10 +1,8 @@
--- CREATE SCHEMA `cooking_contest_ntua`;
--- DROP SCHEMA `cooking_contest_ntua`;
 USE cooking_contest_ntua;
 
 
-#TRIGGERS
-#always need to use delimeter when using triggers
+-- TRIGGERS
+
 DROP TRIGGER IF EXISTS check_tips_count;
 DELIMITER // 
 CREATE TRIGGER check_tips_count
@@ -13,13 +11,11 @@ FOR EACH ROW
 BEGIN
     DECLARE tips_count INT;
 
-    -- Count the number of tips for the given type_meal_id
     SELECT COUNT(*)
     INTO tips_count
     FROM tips
     WHERE type_meal_id = NEW.type_meal_id;
 
-    -- Check if the number of tips exceeds the limit
     IF tips_count >= 3 THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Maximum of 3 tips allowed per meal';
@@ -27,7 +23,7 @@ BEGIN
 END//
 DELIMITER ;
 
-#ελεγχος για να μην skiparw βηματα
+
 DROP TRIGGER IF EXISTS check_step_count;
 DELIMITER // 
 CREATE TRIGGER check_step_count
@@ -36,56 +32,67 @@ FOR EACH ROW
 BEGIN
     DECLARE c INT;
 
-    -- Count the number of tips for the given type_meal_id
     SELECT count(*)
     INTO c
     FROM steps_recipes
     WHERE step_counter + 1 = NEW.step_counter AND recipe_id = NEW.recipe_id;
 
-    -- Check if the number of tips exceeds the limit
     IF NEW.step_counter <> 1 THEN
         IF c = 0 THEN
             SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'You have not skipped a step';
+            SET MESSAGE_TEXT = 'You have skipped a step';
         END IF;
     END IF;
 END//
 DELIMITER ;
 
-DELIMITER ;
 
-#VIEWS
+
+
+
+
+-- VIEWS
+
+
 drop VIEW recipe_food_group;
 
 CREATE VIEW recipe_food_group
 (recipe_name,recipe_id, food_group_name,food_group_id)
 AS
 SELECT
-    recipe_name,
-    recipe_id,
-    food_group_name,
-    food_group_id
-FROM (
-    SELECT
-        r.recipe_name,
-        r.recipe_id,
-        f.food_group_name,
-        f.food_group_id
-    FROM
-        cooking_ingredients AS i
-        INNER JOIN recipes AS r ON i.ingredients_id = r.ingredients_id
-        INNER JOIN food_group AS f ON i.food_group_id = f.food_group_id
-) AS t;
+    r.recipe_name,
+    r.recipe_id,
+    f.food_group_name,
+    f.food_group_id
+FROM
+    cooking_ingredients AS i
+    INNER JOIN recipes AS r ON i.ingredients_id = r.ingredients_id
+    INNER JOIN food_group AS f ON i.food_group_id = f.food_group_id;
+
+
+
+create view co_re as 
+(
+select rr.recipe_id, rr.cooking_or_pastry, rr.recipe_name, rr.recipe_description, rr.time_preparation, rr.time_execution, rr.quantity, rr.ingredients_id, rr.ethnic_id, rr.image, rr.image_caption  
+from cooker_recipes as cr inner join recipes as rr 
+on cr.recipe_id = rr.recipe_id
+);
+
+
+create view my_cook as 
+(
+select *  
+from cooker
+where cooker_id = 1
+);
 
 
 
 
--- SELECT * FROM recipe_food_group;
--- call CHECK_AT_LEAST_ONE_COOKER(@myFlag);
--- select @myFlag;
 
+-- Procedure
 
-DROP PROCEDURE DYNAMIC_CALORIES_CALULATOR;
+DROP PROCEDURE CKECK_IF_COMPETITION_IS_CORRECT;
 
 #procedures
 DELIMITER //
@@ -148,7 +155,7 @@ END //
 DELIMITER ;
 
 
-DROP PROCEDURE IF EXISTS CKECK_IF_COMPETITION_IS_CORRECT;
+DROP PROCEDURE IF EXISTS DYNAMIC_CALORIES_CALULATOR;
 #procedures
 DELIMITER //
 CREATE PROCEDURE DYNAMIC_CALORIES_CALULATOR(IN rec_id int ,OUT calories_overall FLOAT)
@@ -197,7 +204,7 @@ DELIMITER ;
 
 
 
-DROP PROCEDURE CHECK_AT_LEAST_ONE_STEP;
+DROP PROCEDURE CHECK_AT_LEAST_ONE_COOKER;
 DELIMITER //
 
 CREATE PROCEDURE CHECK_AT_LEAST_ONE_COOKER(OUT flag BOOL)
@@ -220,53 +227,19 @@ END //
 
 DELIMITER ;
 
-#Athorazation
-
-DROP ROLE 'Admin';
-CREATE ROLE 'Admin';
-DROP ROLE 'Cooker';
-CREATE ROLE 'Cooker';
 
 
--- Απενεργοποίηση του safe update mode
--- SET SQL_SAFE_UPDATES = 0;
+-- Autharazition
 
+create user 'admin'@'%' identified by 'admin';
+grand all privileges on cooking_contest_ntua.* to 'admin'@'%';
 
+flush privileges;
 
+create user 'cooker1'@'%' identified by 'cooker1';
+grand insert on recipes to 'cooker1'@'%';
+grand all privileges on co_re to 'cooker1'@'%';
+grand all privileges on my_cook to 'cooker1'@'%';
 
--- Επαναφορά του safe update mode
--- SET SQL_SAFE_UPDATES = 1;
+flush privileges;
 
-
- 
-# Autharazition
-
--- create user 'admin'@'%' identified by 'admin';
--- grand all privileges on _ to 'admin'@'%';
-
--- flush privileges;
-
--- create user 'cooker1'@'%' identified by 'cooker1';
--- grand insert on recipes to 'cooker1'@'%';
--- grand all privileges on co_re to 'cooker1'@'%';
--- grand all privileges on my_cook to 'cooker1'@'%';
-
--- flush privileges;
-
-
-
-
-create view co_re as 
-(
-select rr.recipe_id, rr.cooking_or_pastry, rr.recipe_name, rr.recipe_description, rr.time_preparation, rr.time_execution, rr.quantity, rr.ingredients_id, rr.ethnic_id, rr.image, rr.image_caption  
-from cooker_recipes as cr inner join recipes as rr 
-on cr.recipe_id = rr.recipe_id
-);
-
-
-create view my_cook as 
-(
-select *  
-from cooker
-where cooker_id = 1
-);

@@ -109,18 +109,18 @@ BEGIN
     
 	select count(cooker_id) into x
 	from episode_expansion as ee
-	where season_year = season and episod_id = episode
+	where season_year = season and episode_id = episode
 	group by cooker_id;
     
 	select count(recipe_id) into y
 	from episode_expansion as ee
-	where season_year = season and episod_id = episode and is_judge = 0
+	where season_year = season and episode_id = episode and is_judge = 0
     group by recipe_id;
     
     select count(eee.ethnic_id) into z
     from (select recipe_id
     from episode_expansion as ee
-    where season_year = season and episod_id = episode and is_judge = 0) as eee inner join recipes as r on r.recipe_id = eee.recipe_id
+    where season_year = season and episode_id = episode and is_judge = 0) as eee inner join recipes as r on r.recipe_id = eee.recipe_id
     group by ethnic_id;
     
     select count(episode_id) into e
@@ -132,7 +132,7 @@ BEGIN
     from (
     select ee.cooker_id, ee.recipe_id
     from episode_expansion as ee
-    where ee.season_year = season and ee.episod_id = episode and ee.is_judge = 0
+    where ee.season_year = season and ee.episode_id = episode and ee.is_judge = 0
     ) as ce inner join cooker_recipes as cr on (ce.cooker_id, ce.recipe_id) = (cr.cooker_id, cr.recipe_id);
     
     select count(*) into cee 
@@ -141,7 +141,7 @@ BEGIN
 		from (
 		select ee.cooker_id, ee.recipe_id
 		from episode_expansion as ee
-		where ee.season_year = season and ee.episod_id = episode and ee.is_judge = 0
+		where ee.season_year = season and ee.episode_id = episode and ee.is_judge = 0
 		) as cr inner join recipes as r on r.recipe_id = cr.recipe_id
     ) as ce inner join cooker_ethnic as e on (ce.cooker_id, ce.recipe_id) = (e.cooker_id, e.recipe_id);
 

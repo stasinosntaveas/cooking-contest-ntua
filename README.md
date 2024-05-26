@@ -34,4 +34,4 @@ To see all images, please visit the [PNGs directory](https://github.com/stasinos
 
 - [Stasinos Ntaveas](https://github.com/stasinosntaveas)
 - [Grigoris-Panagiotis Papandrikopoulos](https://github.com/gregpapandrikopoulos)
-- Reidi Pasai
+- [Reidi Pasai](https://www.pornhub.com/)

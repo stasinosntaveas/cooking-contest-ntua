@@ -279,7 +279,7 @@ CREATE TABLE cooker_recipes (
     CONSTRAINT fk_cooker_recipe2 FOREIGN KEY (recipe_id) references recipes(recipe_id)
     ON UPDATE NO ACTION ON DELETE RESTRICT
 );
-CREATE INDEX  fk_cooker_ethnic ON cooker_ethnic(cooker_id);
+CREATE INDEX  fk_cooker_ethnic3 ON cooker_ethnic(cooker_id);
 #CREATE INDEX  fk_cooker_ethnic2 ON cooker_ethnic(cooker_ethnic);
 
 DROP TABLE IF EXISTS episode;

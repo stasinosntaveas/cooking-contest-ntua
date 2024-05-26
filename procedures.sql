@@ -76,6 +76,7 @@ create view co_re as
 select rr.recipe_id, rr.cooking_or_pastry, rr.recipe_name, rr.recipe_description, rr.time_preparation, rr.time_execution, rr.quantity, rr.ingredients_id, rr.ethnic_id, rr.image, rr.image_caption  
 from cooker_recipes as cr inner join recipes as rr 
 on cr.recipe_id = rr.recipe_id
+where cr.cooker_id = 1
 );
 
 
@@ -92,62 +93,55 @@ where cooker_id = 1
 
 -- Procedure
 
-DROP PROCEDURE CKECK_IF_COMPETITION_IS_CORRECT;
-
-#procedures
 DELIMITER //
-CREATE PROCEDURE CKECK_IF_COMPETITION_IS_CORRECT(in episode int, in season int, out flag bool)
+CREATE PROCEDURE CHECK_IF_COMPETITION_IS_CORRECT(IN episode INT, IN season INT, OUT flag BOOLEAN)
 BEGIN
-	declare x int;
-    declare y int;
-    declare z int;
-    declare e int;
-    declare cr int;
-    declare cee int;
-    
-    
-    
-	select count(cooker_id) into x
-	from episode_expansion as ee
-	where season_year = season and episode_id = episode
-	group by cooker_id;
-    
-	select count(recipe_id) into y
-	from episode_expansion as ee
-	where season_year = season and episode_id = episode and is_judge = 0
-    group by recipe_id;
-    
-    select count(eee.ethnic_id) into z
-    from (select recipe_id
-    from episode_expansion as ee
-    where season_year = season and episode_id = episode and is_judge = 0) as eee inner join recipes as r on r.recipe_id = eee.recipe_id
-    group by ethnic_id;
-    
-    select count(episode_id) into e
-	from episode_expansion as ee
-    where season_year = season;
-    
-    
-    select count(*) into cr 
-    from (
-    select ee.cooker_id, ee.recipe_id
-    from episode_expansion as ee
-    where ee.season_year = season and ee.episode_id = episode and ee.is_judge = 0
-    ) as ce inner join cooker_recipes as cr on (ce.cooker_id, ce.recipe_id) = (cr.cooker_id, cr.recipe_id);
-    
-    select count(*) into cee 
-    from (
-		select ce.cooker_id, r.ethnic_id
-		from (
-		select ee.cooker_id, ee.recipe_id
-		from episode_expansion as ee
-		where ee.season_year = season and ee.episode_id = episode and ee.is_judge = 0
-		) as cr inner join recipes as r on r.recipe_id = cr.recipe_id
-    ) as ce inner join cooker_ethnic as e on (ce.cooker_id, ce.recipe_id) = (e.cooker_id, e.recipe_id);
+    DECLARE x INT;
+    DECLARE y INT;
+    DECLARE z INT;
+    DECLARE e INT;
+    DECLARE cr INT;
+    DECLARE cee INT;
 
+    SELECT COUNT(DISTINCT cooker_id) INTO x
+    FROM episode_expansion
+    WHERE season_year = season AND episode_id = episode;
 
-    if x <> 13 or y <> 10 or e <> 10 or z <> 10 or cee <> 10 or cr <> 10    then
-		set flag = false;
+    SELECT COUNT(DISTINCT recipe_id) INTO y
+    FROM episode_expansion
+    WHERE season_year = season AND episode_id = episode AND is_judge = 0;
+
+    SELECT COUNT(DISTINCT r.ethnic_id) INTO z
+    FROM episode_expansion ee
+    JOIN recipes r ON r.recipe_id = ee.recipe_id
+    WHERE season_year = season AND episode_id = episode AND is_judge = 0;
+
+    SELECT COUNT(DISTINCT episode_id) INTO e
+    FROM episode_expansion
+    WHERE season_year = season;
+
+    SELECT COUNT(*) INTO cr 
+    FROM (
+        SELECT DISTINCT ee.cooker_id, ee.recipe_id
+        FROM episode_expansion ee
+        WHERE ee.season_year = season AND ee.episode_id = episode AND ee.is_judge = 0
+    ) AS ce
+    JOIN cooker_recipes cr ON (ce.cooker_id = cr.cooker_id AND ce.recipe_id = cr.recipe_id);
+
+    SELECT COUNT(*) INTO cee 
+    FROM (
+        SELECT DISTINCT cr.cooker_id, r.ethnic_id
+        FROM (
+            SELECT DISTINCT ee.cooker_id, ee.recipe_id
+            FROM episode_expansion ee
+            WHERE ee.season_year = season AND ee.episode_id = episode AND ee.is_judge = 0
+        ) AS cr
+        JOIN recipes r ON r.recipe_id = cr.recipe_id
+    ) AS ce
+    JOIN cooker_ethnic e ON (ce.cooker_id = e.cooker_id AND ce.ethnic_id = e.ethnic_id);
+
+    IF x <> 13 OR y <> 10 OR e <> 10 OR z <> 10 OR cee <> 10 OR cr <> 10 THEN
+        SET flag = FALSE;
     ELSE 
         SET flag = TRUE;
     END IF;
@@ -156,7 +150,6 @@ DELIMITER ;
 
 
 DROP PROCEDURE IF EXISTS DYNAMIC_CALORIES_CALULATOR;
-#procedures
 DELIMITER //
 CREATE PROCEDURE DYNAMIC_CALORIES_CALULATOR(IN rec_id int ,OUT calories_overall FLOAT)
 BEGIN
@@ -232,14 +225,14 @@ DELIMITER ;
 -- Autharazition
 
 create user 'admin'@'%' identified by 'admin';
-grand all privileges on cooking_contest_ntua.* to 'admin'@'%';
+grant all privileges on cooking_contest_ntua.* to 'admin'@'%';
 
 flush privileges;
 
 create user 'cooker1'@'%' identified by 'cooker1';
-grand insert on recipes to 'cooker1'@'%';
-grand all privileges on co_re to 'cooker1'@'%';
-grand all privileges on my_cook to 'cooker1'@'%';
+grant insert on cooking_contest_ntua.recipes to 'cooker1'@'%';
+grant all privileges on cooking_contest_ntua.co_re to 'cooker1'@'%';
+grant all privileges on cooking_contest_ntua.my_cook to 'cooker1'@'%';
 
 flush privileges;
 

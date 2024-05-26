@@ -332,15 +332,3 @@ WHERE f.food_group_id NOT IN (
     INNER JOIN cooking_ingredients AS ci ON ci.ingredients_id = ri.ingredients_id
     GROUP BY ci.food_group_id
 );
-
-
-
-
-
-
-
-
-
-
-
-

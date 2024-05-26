@@ -20,7 +20,7 @@ This project is ideal for culinary enthusiasts and event organizers looking to c
 - **Scoring System**: Calculate and store scores given by judges.
 
 ## Entity Related Diagram
-![COOKING_CONTEST_ERD_NTUA_2024](https://github.com/stasinosntaveas/cooking-contest-ntua/blob/main/pngs/erd_transparent.png)
+![COOKING_CONTEST_ERD_NTUA_2024](https://github.com/stasinosntaveas/cooking-contest-ntua/blob/main/pngs/erd.png)
 
 ## Relational Schema
 <p float="left">
